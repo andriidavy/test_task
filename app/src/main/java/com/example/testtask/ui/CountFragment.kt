@@ -6,7 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.testtask.databinding.FragmentCountBinding
 import com.example.testtask.viewmodel.CountViewModel
@@ -14,7 +16,9 @@ import com.example.testtask.viewmodel.CountViewModel
 class CountFragment : Fragment() {
     private lateinit var binding: FragmentCountBinding
 
-    private val viewModel by viewModels<CountViewModel>()
+    private val viewModel: CountViewModel by lazy {
+        ViewModelProvider(requireActivity())[CountViewModel::class.java]
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -27,10 +31,12 @@ class CountFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
 
+        // increase counter value
         btCount.setOnClickListener {
             viewModel.addCount()
         }
 
+        // set current counter value to view
         viewModel.count.observe(viewLifecycleOwner) { result ->
             tvClickCount.text = result.toString()
         }
@@ -39,16 +45,15 @@ class CountFragment : Fragment() {
     }
 
     private fun setToolbarBackButton() = with(binding) {
-        // Установка тулбара в качестве action bar
+        // set toolbar as action bar
         (activity as AppCompatActivity).setSupportActionBar(fragmentToolbar)
 
-        // Показать кнопку "назад" (стрелку) в тулбаре
+        // show button "back" in toolbar
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        // Установить обработчик для кнопки "назад" (стрелки)
+        // set listener for button "back"
         fragmentToolbar.setNavigationOnClickListener {
-            // Вернуться на предыдущий фрагмент или активити при нажатии кнопки "назад"
-            activity?.onBackPressed()
+            activity?.onBackPressedDispatcher?.onBackPressed()
         }
     }
 }
